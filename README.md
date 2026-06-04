@@ -5,7 +5,7 @@
 | 항목 | 내용 |
 |------|------|
 | 워크북 ID | MagicSquare_1004 |
-| 현재 단계 | 문제 정의 · PRD v0.1 (구현 전) |
+| 현재 단계 | STEP 10 — entity·control GREEN · Golden 15 baseline |
 | 설계 관점 | ECB (Entity–Control–Boundary) — 단계적 적용 |
 
 ---
@@ -38,21 +38,26 @@ OO 과제에서 빈 칸 2개를 채운 뒤 합을 맞췄다고 생각했지만 *
 MagicSquare_XX/
 ├── README.md
 ├── docs/
-│   └── PRD.md                          # 제품 요구사항 v0.1
-├── Report/
-│   ├── 01.MagicSquare_1004-MomTest-보고서.md
-│   └── 01.MagicSquare_ProblemDefinition_Report.md
-└── Prompting/
-    └── 01.MagicSquare_1004-Export-Transcript.md
+│   ├── PRD.md
+│   ├── RED-Design-Tables.md
+│   └── RED-TODO.md
+├── src/entity/          # find_blank_coords, solve_step_a, MagicConstant
+├── tests/entity/        # test_d_loc_*, test_d_sol_*
+├── tests/golden/        # Golden Master baseline
+├── Report/              # STEP 1~9 보고서
+└── Prompting/           # 세션 Export
 ```
 
 | 폴더 | 용도 |
 |------|------|
-| `docs/` | PRD, 요구사항·AC |
-| `Report/` | Mom Test, 문제 정의 보고서 |
+| `docs/` | PRD, RED 설계표·ToDo |
+| `src/entity/` | `find_blank_coords`, `solve_step_a`, `MagicConstant` |
+| `tests/entity/` | Logic Track `D-LOC-*`, `D-SOL-*` |
+| `tests/golden/` | Golden Master (`UPDATE_GOLDEN=1` 로만 baseline 갱신) |
+| `Report/` | Mom Test, TDD STEP 보고서 |
 | `Prompting/` | Cursor 대화 Export |
 
-> `src/`, `tests/` — ECB Harness + entity TDD (`SquareValidator`, `find_blank_coords`, pytest).
+> `tests/control/` — v0.1 `SquareValidator` (**미착수**).
 
 ---
 
@@ -67,7 +72,7 @@ PowerShell 기본 정책이 **Restricted**이면 `Activate.ps1`·`setup.ps1`에�
 ```powershell
 cd MagicSquare_XX
 .\scripts\setup.cmd
-.\.venv\Scripts\python.exe -m pytest tests/entity/test_d_loc_01.py -v
+.\.venv\Scripts\python.exe -m pytest tests/entity/ -v
 ```
 
 활성화가 필요하면 **CMD**에서: `.venv\Scripts\activate.bat` (`.ps1` 아님).
@@ -78,7 +83,7 @@ cd MagicSquare_XX
 Set-ExecutionPolicy -Scope CurrentUser RemoteSigned   # 관리자 불필요, 1회
 .\scripts\setup.ps1
 .\.venv\Scripts\Activate.ps1
-python -m pytest tests/entity/test_d_loc_01.py -v
+python -m pytest tests/entity/ -v
 ```
 
 > `Set-ExecutionPolicy RemoteSigned`만 쓰면 **LocalMachine** 변경 시도로 거부될 수 있습니다. 반드시 **`-Scope CurrentUser`** 를 붙이세요.
@@ -90,7 +95,7 @@ cd MagicSquare_XX
 chmod +x scripts/setup.sh
 ./scripts/setup.sh
 source .venv/bin/activate
-python -m pytest tests/entity/test_d_loc_01.py -v
+python -m pytest tests/entity/ -v
 ```
 
 | 단계 | 설명 |
@@ -109,9 +114,13 @@ Cursor/VS Code: 인터프리터 **`.venv\Scripts\python.exe`**. 터미널은 `Ac
 | 문서 | 설명 |
 |------|------|
 | [docs/PRD.md](docs/PRD.md) | v0.1 범위, 기능·도메인 요구사항, 성공 기준(AC) |
-| [Report/01.MagicSquare_ProblemDefinition_Report.md](Report/01.MagicSquare_ProblemDefinition_Report.md) | Mom Test + R-G-I-O + 8계층(세션 3) |
-| [Report/01.MagicSquare_1004-MomTest-보고서.md](Report/01.MagicSquare_1004-MomTest-보고서.md) | STEP 1 인터뷰 원문 정리 |
-| [Prompting/01.MagicSquare_1004-Export-Transcript.md](Prompting/01.MagicSquare_1004-Export-Transcript.md) | 세션 대화 Export |
+| [docs/RED-TODO.md](docs/RED-TODO.md) | RED/GREEN/REFACTOR 체크리스트 (완료 시 `[x]`) |
+| [docs/RED-Design-Tables.md](docs/RED-Design-Tables.md) | Dual-Track RED 설계표·픽스처 G0~G6 |
+| [Report/10.MagicSquare_1004-Entity-Control-Golden-보고서.md](Report/10.MagicSquare_1004-Entity-Control-Golden-보고서.md) | STEP 10 entity·control GREEN · Golden 15 |
+| [Report/09.MagicSquare_1004-D-LOC-02-D-SOL-02-Golden-보고서.md](Report/09.MagicSquare_1004-D-LOC-02-D-SOL-02-Golden-보고서.md) | STEP 9 D-LOC-02 · D-SOL-02 Golden |
+| [Report/08.MagicSquare_1004-GREEN-D-SOL-01-Golden-보고서.md](Report/08.MagicSquare_1004-GREEN-D-SOL-01-Golden-보고서.md) | STEP 8 D-SOL-01 Golden |
+| [Report/07.MagicSquare_1004-GREEN-D-LOC-01-Venv-보고서.md](Report/07.MagicSquare_1004-GREEN-D-LOC-01-Venv-보고서.md) | STEP 7 D-LOC-01 · `.venv` |
+| [Report/01.MagicSquare_ProblemDefinition_Report.md](Report/01.MagicSquare_ProblemDefinition_Report.md) | Mom Test + R-G-I-O + 8계층 |
 
 ---
 
@@ -131,14 +140,35 @@ Cursor/VS Code: 인터프리터 **`.venv\Scripts\python.exe`**. 터미널은 `Ac
 
 ---
 
+## TDD 진행 체크리스트
+
+상세 ToDo: [docs/RED-TODO.md](docs/RED-TODO.md)
+
+| Test ID | Phase | 상태 | 비고 |
+|---------|-------|------|------|
+| D-LOC-01 | RED→GREEN | [x] | G1 → `[(2,2),(3,3)]` · STEP 7 |
+| D-LOC-02 | RED→GREEN | [x] | G0 → `[]` · STEP 9 |
+| D-SOL-01 | RED→GREEN | [x] | G1 Step A · golden `d_sol_01_g1_*` · STEP 8 |
+| D-SOL-02 | RED→GREEN | [x] | G0 vacuous · golden `d_sol_02_g0_*` · STEP 9 |
+| D-VAL-01~07 | RED→GREEN | [x] | `SquareValidator` · STEP 10 |
+| D-MIS-01~02 | RED→GREEN | [x] | `find_not_exist_nums` · STEP 10 |
+| D-SOL-03 | RED→GREEN | [x] | `SolveError` · STEP 10 |
+| D-ENT-01 | RED→GREEN | [x] | `MagicSquare` · golden · STEP 10 |
+| D-LOC-01/02 | Golden | [x] | `d_loc_*` baseline · STEP 10 |
+
+```powershell
+.\.venv\Scripts\python.exe -m pytest tests/ -v   # 15 passed · Golden matched
+```
+
+---
+
 ## ECB 맵 (참고)
 
-| 구분 | 후보 | v0.1 |
+| 구분 | 후보 | 상태 |
 |------|------|------|
-| Entity | `MagicSquare`, `Cell`, `SolveResult` | 이후 |
-| Control | `SquareValidator` | **우선** |
-| Control | `MissingFinder`, `Solver` | 이후 |
-| Boundary | `GridUI`, `InputHandler`, `ResultDisplay` | 이후 |
+| Entity | `find_blank_coords`, `solve_step_a`, `MagicSquare` | **GREEN** + Golden (STEP 7~10) |
+| Control | `SquareValidator`, `MissingFinder`, `Solver` | **GREEN** + Golden (STEP 10) |
+| Boundary | `GridUI`, E001~E007 | v1.0 |
 
 ---
 

@@ -1,0 +1,3 @@
+validate: false
+violating_lines: col4,diag_sw,row1
+error: NONE

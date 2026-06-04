@@ -23,16 +23,16 @@
 
 ### B. Harness · 환경 (RED 착수 전)
 
-- [ ] `pip install -e ".[dev]"` — dev 의존성 설치
-- [ ] `pytest` 실행 — Harness만이면 exit 5 (0건 수집) 확인
-- [ ] `tests/control/` 디렉터리·`test_d_*.py` 명명 규칙 확인
+- [x] `pip install -e ".[dev]"` — dev 의존성 설치 (`.venv` · STEP 7)
+- [x] `pytest` 실행 — `tests/entity/` 4건 수집·passed (STEP 7~9)
+- [x] `tests/control/` 디렉터리·`test_d_*.py` 명명 규칙 확인 (STEP 10 skeleton)
 - [ ] 응답 선언: `Phase: red | Layer: control | Track: Logic`
 
 ### C. 픽스처 · Arrange (Logic Mock 금지)
 
-- [ ] **G2** — Mom S2 대각선-only-fail: 행·열 OK, 대각선 1개만 합≠34 (구체 4×4 배열 확정)
-- [ ] **G0** — 슬라이드 정답 (README 예시; 이후 Green·D-VAL-02용, RED 1차에서는 불필요)
-- [ ] **G1** — OO 과제 빈칸 2개 (D-VAL-06 RED는 v0.1 후반)
+- [x] **G2** — Mom S2: `grid_g2` (`conftest.py`) · GREEN에서 대각선-only 속성 확정
+- [x] **G0** — 슬라이드 정답 (`tests/conftest.py` `grid_g0` · D-LOC-02 / D-SOL-02)
+- [x] **G1** — OO 과제 빈칸 2개 (`grid_g1` · D-LOC-01 / D-SOL-01)
 - [ ] 격자는 **실제 `list[list[int]]` 픽스처**만 — `SquareValidator` 스텁·Mock **금지**
 
 ### D. RED 테스트 작성 (한 턴 · 테스트 ID 하나)
@@ -82,10 +82,10 @@
 
 ### 0. 사전 준비
 
-- [ ] `pip install -e ".[dev]"` — pytest Harness 확인
-- [ ] 공유 픽스처 정의 — G0, G1, G2, G3, G4, G5, G6 (`tests/conftest.py` 또는 layer별 fixture)
-- [ ] G2 격자 값 확정 — Mom S2 대각선-only-fail 구체 배열 문서화
-- [ ] `MagicConstant` SSOT 스켈레ton (`src/entity/` 또는 `src/control/`)
+- [x] `pip install -e ".[dev]"` — pytest Harness 확인 (`.venv`)
+- [x] 공유 픽스처 정의 — **G0~G6, G1 채움, no_solution** (`tests/conftest.py`)
+- [x] G2 격자 값 — `grid_g2` (G1+7·10 채움) · 대각선-only 속성은 GREEN에서 검증
+- [x] `MagicConstant` SSOT (`src/entity/constants.py` · I9)
 
 ### 1. v0.1 — Track B · control · `SquareValidator`
 
@@ -112,10 +112,10 @@
 
 - [ ] RED: D-ENT-01 — G1 → 4×4·빈칸2·1~16 (`tests/entity/test_d_magic_square.py`)
 - [ ] GREEN: D-ENT-01 — `MagicSquare` 최소 구현
-- [ ] RED: D-LOC-01 — G1 → `find_blank_coords()` `[(2,2),(3,3)]` (I6)
-- [ ] GREEN: D-LOC-01 — 빈칸 좌표 탐색
-- [ ] RED: D-LOC-02 — G0 → `find_blank_coords()` `[]`
-- [ ] GREEN: D-LOC-02 — 완성 격자 빈칸 없음
+- [x] RED: D-LOC-01 — G1 → `find_blank_coords()` `[(2,2),(3,3)]` (I6) · STEP 6~7
+- [x] GREEN: D-LOC-01 — 빈칸 좌표 탐색 · STEP 7
+- [x] RED: D-LOC-02 — G0 → `find_blank_coords()` `[]` · STEP 9
+- [x] GREEN: D-LOC-02 — 완성 격자 빈칸 없음 · STEP 9
 - [ ] REFACTOR: entity layer · ECB import 방향 점검 (`/review-ecb`)
 
 ### 3. v0.3+ — Track B · control · `MissingFinder` · `Solver`
@@ -124,10 +124,10 @@
 - [ ] GREEN: D-MIS-01 — 누락 숫자 오름차순
 - [ ] RED: D-MIS-02 — G0 → `[]`
 - [ ] GREEN: D-MIS-02
-- [ ] RED: D-SOL-01 — G1 Step A 성공 (I8)
-- [ ] GREEN: D-SOL-01 — 솔버 Step A
-- [ ] RED: D-SOL-02 — G1 → `int[6]` `[r1,c1,n1,r2,c2,n2]` 1-index
-- [ ] GREEN: D-SOL-02 — 솔버 출력 계약
+- [x] RED: D-SOL-01 — G1 Step A 성공 (I8) · STEP 8
+- [x] GREEN: D-SOL-01 — 솔버 Step A · STEP 8
+- [x] RED: D-SOL-02 — G0 vacuous Step A + 출력 계약 (`test_d_sol_02`) · STEP 9 · G1 `[2,2,10,3,3,7]` 는 D-SOL-01·`d_sol_01_g1_*` golden
+- [x] GREEN: D-SOL-02 — Golden `d_sol_02_g0_step_a.approved.txt` matched · STEP 9
 - [ ] RED: D-SOL-03 — 해 없는 격자 → control 실패 (boundary E006 연계)
 - [ ] GREEN: D-SOL-03
 - [ ] REFACTOR: Solver · MissingFinder 경계 정리
@@ -178,7 +178,7 @@
 - [ ] **M2** — Mom S3: D-VAL-02 GREEN (정답 격자 통과)
 - [ ] **M3** — Mom S1: D-VAL-06 GREEN (OO 과제 재현)
 - [ ] **M4** — v0.1 완료: `pytest tests/control/ -v` 전부 passed
-- [ ] **M5** — v0.2 entity: `pytest tests/entity/ -v` passed
+- [x] **M5** — v0.2 entity: `pytest tests/entity/ -v` passed (4 tests · STEP 9)
 - [ ] **M6** — v1.0 boundary: `pytest tests/boundary/ -v` passed
 - [ ] **M7** — full suite: `pytest -v` passed + `/review-ecb` 위반 0
 

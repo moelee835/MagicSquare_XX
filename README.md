@@ -52,7 +52,55 @@ MagicSquare_XX/
 | `Report/` | Mom Test, 문제 정의 보고서 |
 | `Prompting/` | Cursor 대화 Export |
 
-> `src/`, `tests/` — PRD v0.1 구현 시 추가 예정 (`SquareValidator`, pytest 등).
+> `src/`, `tests/` — ECB Harness + entity TDD (`SquareValidator`, `find_blank_coords`, pytest).
+
+---
+
+## 개발 환경 (가상환경)
+
+프로젝트 루트에서 **`.venv`** 를 만들고, 그 안의 Python으로만 설치·테스트합니다.
+
+### Windows (권장 — 실행 정책 오류 없음)
+
+PowerShell 기본 정책이 **Restricted**이면 `Activate.ps1`·`setup.ps1`에서 **보안 오류(PSSecurityException)** 가 납니다. **`.cmd` / venv `python.exe` 직접 호출**을 쓰세요.
+
+```powershell
+cd MagicSquare_XX
+.\scripts\setup.cmd
+.\.venv\Scripts\python.exe -m pytest tests/entity/test_d_loc_01.py -v
+```
+
+활성화가 필요하면 **CMD**에서: `.venv\Scripts\activate.bat` (`.ps1` 아님).
+
+### Windows (PowerShell `.ps1` — 정책 허용 시만)
+
+```powershell
+Set-ExecutionPolicy -Scope CurrentUser RemoteSigned   # 관리자 불필요, 1회
+.\scripts\setup.ps1
+.\.venv\Scripts\Activate.ps1
+python -m pytest tests/entity/test_d_loc_01.py -v
+```
+
+> `Set-ExecutionPolicy RemoteSigned`만 쓰면 **LocalMachine** 변경 시도로 거부될 수 있습니다. 반드시 **`-Scope CurrentUser`** 를 붙이세요.
+
+### macOS / Linux
+
+```bash
+cd MagicSquare_XX
+chmod +x scripts/setup.sh
+./scripts/setup.sh
+source .venv/bin/activate
+python -m pytest tests/entity/test_d_loc_01.py -v
+```
+
+| 단계 | 설명 |
+|------|------|
+| `scripts/setup.cmd` (Win) / `setup.sh` | `.venv` 생성 + `pip install -e ".[dev]"` — **정책 무관** |
+| `scripts/setup.ps1` | PowerShell 전용 (실행 정책 필요) |
+| pytest (Win, 정책 제한 시) | `.\.venv\Scripts\python.exe -m pytest …` — **Activate.ps1 불필요** |
+| npm/npx 보안 오류 | Node 설치의 `npm.ps1`도 동일 원인 — `npm.cmd -v` 사용 또는 위 CurrentUser 정책 |
+
+Cursor/VS Code: 인터프리터 **`.venv\Scripts\python.exe`**. 터미널은 `Activate.ps1` 대신 venv Python 경로를 씁니다 (`python.terminal.activateEnvironment`: false).
 
 ---
 

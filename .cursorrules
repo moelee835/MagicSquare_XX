@@ -1,0 +1,58 @@
+# MagicSquare_1004 — Cursor Rules (초안)
+
+## 프로젝트
+- 워크북: MagicSquare_1004 (4×4 부분 마방진 ECB 실습)
+- 참조: `docs/PRD.md`, `Report/01.MagicSquare_ProblemDefinition_Report.md`
+- 진입점: `pytest` (PRD C1). git commit은 **사용자 요청 시에만** 수행.
+
+## 도메인
+- 4×4 정수 격자. 빈 칸은 `0` **정확히 2개**. 채워진 칸은 **1~16**, 중복 없음.
+- **10선**(행4·열4·대각 ↘·↙) 각 합 = 마방진 상수 **34**.
+- 솔버/채움 성공 출력: `int[6]` → `[r1, c1, n1, r2, c2, n2]`. 좌표는 **1-index** (행·열 모두 1~4).
+- 숫자 **34**, **16**, 격자 크기 **4**는 `MagicConstant`(또는 동등 SSOT)에서만 정의. 리터럴 산재 금지.
+
+## 오류 코드 (Boundary 전담)
+- **E001~E007**는 `boundary` 계층에서만 발생·변환·표시한다.
+- **Entity는 E001~E005 처리 금지** — 입력 형식·크기·빈칸 수·범위·중복 등 사전 검증은 boundary 책임.
+- Control/Entity는 **유효 격자**만 받는다. boundary 실패 시 control·entity로 내려보내지 않는다.
+
+## ECB 아키텍처
+```
+boundary → control → entity
+```
+- 의존 방향: boundary가 control, control이 entity를 호출. **역방향 import 금지**.
+- **`entity`는 `control`·`boundary` import 금지** (순수 도메인).
+- `src/entity/`, `src/control/`, `src/boundary/` — 계층별 단일 책임.
+
+| 계층 | 역할 (v0.1+) |
+|------|----------------|
+| entity | `MagicSquare`, `Cell`, 도메인 규칙·상태 |
+| control | `SquareValidator`, `MissingFinder`, `Solver` — 유스케이스 조율 |
+| boundary | CLI/UI, E001~E007, 입출력 변환 |
+
+## Dual-Track TDD
+| 트랙 | 대상 | Mock |
+|------|------|------|
+| **Logic** | entity, control | **도메인 Mock 금지** — 실제 객체·픽스처만 |
+| **UI** | boundary | **Mock 허용** — control/entity 스텁 가능 |
+
+- 테스트 ID: **D-*** (Logic), **U-*** (UI).
+- 파일명: `test_d_*.py` (Logic), `test_u_*.py` (UI).
+- 디렉터리: `tests/entity/`, `tests/control/` → Logic / `tests/boundary/` → UI.
+
+## TDD 규칙
+1. **RED** → **GREEN** → **REFACTOR** 순서 준수. 한 번에 한 Phase.
+2. RED: 실패하는 테스트 먼저. GREEN: 최소 구현. REFACTOR: 동작 유지하며 구조 정리.
+3. **금지:** assert 완화, `@pytest.mark.skip`, `xfail`, “일단 통과”용 더미 구현.
+4. Mom Test 연결: Red = 대각선-only-fail / Green = 슬라이드 정답 격자 (PRD §5.3).
+
+## AI 행동 (Cursor Agent)
+- **한국어**로 응답.
+- TDD 작업 시 매 턴 선언: **Phase**(RED|GREEN|REFACTOR) · **Layer**(entity|control|boundary) · **Track**(Logic|UI).
+- 범위 밖(솔버 앱·GridUI 일괄 구현 등 PRD 비목표)은 제안하지 않고, 현재 Phase에 맞는 최소 diff만.
+- 코드 변경 전 해당 계층 기존 파일·컨벤션을 읽고 따른다.
+- 테스트·구현 추가 시 MagicConstant SSOT와 ECB 의존 방향을 위반하지 않는다.
+
+## v0.1 우선순위
+1. `tests/control/` — `SquareValidator` 10선·34 (Logic, D-*)
+2. Entity 분리·Boundary·Solver — PRD 로드맵 순, 선행 Phase 완료 후 진행
